@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "vpc_fl_role_source" {
 
 # VPC Flow Logs IAM Policy
 resource "aws_iam_policy" "vpc_fl_policy" {
-  name        = "VPCFlowLogsPolicy"
+  name        = "${var.name_prefix}-VPCFlowLogs-Policy"
   path        = "/"
   description = "VPC Flow Logs"
   policy      = data.aws_iam_policy_document.vpc_fl_policy_source.json
@@ -38,7 +38,7 @@ resource "aws_iam_policy" "vpc_fl_policy" {
 
 # VPC Flow Logs IAM Role (vpc_fl_ Task Execution role)
 resource "aws_iam_role" "vpc_fl_policy_role" {
-  name               = "VPCFlowLogsRole"
+  name               = "${var.name_prefix}-VPCFlowLogs-Role"
   assume_role_policy = data.aws_iam_policy_document.vpc_fl_role_source.json
   tags               = { Name = "${var.name_prefix}-VPCFlowLogs-Role" }
 }
