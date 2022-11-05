@@ -18,7 +18,7 @@ variable "vpc_cidr" {
   type        = string
 
   validation {
-    condition     = try(cidrhost(var.vpc_cidr., 0), null) != null
+    condition     = try(cidrhost(var.vpc_cidr, 0), null) != null
     error_message = "The CIDR block is invalid. Must be of format '0.0.0.0/0'"
   }
 }
