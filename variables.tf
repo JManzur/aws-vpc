@@ -19,7 +19,7 @@ variable "vpc_cidr" {
 
   validation {
     condition     = try(cidrhost(var.vpc_cidr, 0), null) != null
-    error_message = "The CIDR block is invalid. Must be of format '0.0.0.0/0'"
+    error_message = "[ERROR] The CIDR block is invalid. Must be of format '0.0.0.0/0'"
   }
 }
 
@@ -45,29 +45,29 @@ variable "private_subnet_list" {
 
 variable "logs_retention" {
   description = "[REQUIRED] The number of days to retain log events in CloudWatch"
-  type        = string #Have to be of type 'string' to be able to perform conditional validation.
+  type        = number
 
   validation {
     condition = (
-      var.logs_retention == "0" ||
-      var.logs_retention == "1" ||
-      var.logs_retention == "3" ||
-      var.logs_retention == "5" ||
-      var.logs_retention == "7" ||
-      var.logs_retention == "14" ||
-      var.logs_retention == "30" ||
-      var.logs_retention == "60" ||
-      var.logs_retention == "90" ||
-      var.logs_retention == "120" ||
-      var.logs_retention == "150" ||
-      var.logs_retention == "180" ||
-      var.logs_retention == "365" ||
-      var.logs_retention == "400" ||
-      var.logs_retention == "545" ||
-      var.logs_retention == "731" ||
-      var.logs_retention == "1827" ||
-      var.logs_retention == "3653"
+      var.logs_retention == 0 ||
+      var.logs_retention == 1 ||
+      var.logs_retention == 3 ||
+      var.logs_retention == 5 ||
+      var.logs_retention == 7 ||
+      var.logs_retention == 14 ||
+      var.logs_retention == 30 ||
+      var.logs_retention == 60 ||
+      var.logs_retention == 90 ||
+      var.logs_retention == 120 ||
+      var.logs_retention == 150 ||
+      var.logs_retention == 180 ||
+      var.logs_retention == 365 ||
+      var.logs_retention == 400 ||
+      var.logs_retention == 545 ||
+      var.logs_retention == 731 ||
+      var.logs_retention == 1827 ||
+      var.logs_retention == 3653
     )
-    error_message = "The value must be one of the followings: 0,1,3,5,7,14,30,60,90,120,150,180,365,400,545,731,1827,3653."
+    error_message = "[ERROR] The value must be one of the followings: 0,1,3,5,7,14,30,60,90,120,150,180,365,400,545,731,1827,3653."
   }
 }
