@@ -4,12 +4,13 @@ Terraform Module to deploy a VPC
 
 ```bash
 module "vpc" {
-  source             = "git::https://github.com/JManzur/aws-vpc.git?ref=v1.0.4"
-  name_prefix        = "Demo"
-  aws_region         = "us-east-1"
-  logs_retention     = 0
-  one_nat_per_subnet = true
-  vpc_cidr           = "10.22.0.0/16"
+  source                    = "git::https://github.com/JManzur/aws-vpc.git?ref=v1.0.5"
+  name_prefix               = "Demo"
+  aws_region                = "us-east-1"
+  logs_retention            = 0
+  vpc_flow_logs_destination = "S3"
+  one_nat_per_subnet        = true
+  vpc_cidr                  = "10.22.0.0/16"
   public_subnet_list = [
     {
       name    = "Public"

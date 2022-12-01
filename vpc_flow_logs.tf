@@ -4,7 +4,7 @@ resource "aws_kms_key" "vpc_flow_logs" {
   description             = "S3 Encryption Key"
   deletion_window_in_days = 15
   multi_region            = false
-  tags                    = { Name = "${aws_vpc.vpc.id}-flow-logs" }
+  tags                    = { Name = lower("${var.name_prefix}-vpc-flow-logs") }
 
   depends_on = [
     aws_vpc.vpc
@@ -23,7 +23,7 @@ resource "aws_s3_bucket" "vpc_flow_logs" {
   count  = var.vpc_flow_logs_destination == "S3" ? 1 : 0
   bucket = "${aws_vpc.vpc.id}-flow-logs"
 
-  tags = { Name = "${aws_vpc.vpc.id}-flow-logs" }
+  tags = { Name = lower("${var.name_prefix}-vpc-flow-logs") }
 
   depends_on = [
     aws_vpc.vpc
@@ -71,7 +71,7 @@ resource "aws_cloudwatch_log_group" "vpc_log_group" {
   name              = "${aws_vpc.vpc.id}-flow-logs"
   retention_in_days = var.logs_retention
 
-  tags = { Name = "${aws_vpc.vpc.id}-flow-logs" }
+  tags = { Name = lower("${var.name_prefix}-vpc-flow-logs") }
 
   depends_on = [
     aws_vpc.vpc
