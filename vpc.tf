@@ -13,14 +13,6 @@ resource "aws_vpc" "vpc" {
   tags = { Name = "${var.name_prefix}-VPC" }
 }
 
-# VPC Flow Logs to CloudWatch
-resource "aws_flow_log" "vpc_flow_log" {
-  iam_role_arn    = aws_iam_role.vpc_fl_policy_role.arn
-  log_destination = aws_cloudwatch_log_group.vpc_log_group.arn
-  traffic_type    = "ALL"
-  vpc_id          = aws_vpc.vpc.id
-}
-
 # Public Subnets
 resource "aws_subnet" "public" {
   for_each                = { for i, v in var.public_subnet_list : i => v }

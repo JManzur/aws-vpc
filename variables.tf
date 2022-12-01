@@ -19,7 +19,7 @@ variable "vpc_cidr" {
 
   validation {
     condition     = try(cidrhost(var.vpc_cidr, 0), null) != null
-    error_message = "[ERROR] The CIDR block is invalid. Must be of format '0.0.0.0/0'"
+    error_message = "The CIDR block is invalid. Must be of format '0.0.0.0/0'."
   }
 }
 
@@ -68,6 +68,18 @@ variable "logs_retention" {
       var.logs_retention == 1827 ||
       var.logs_retention == 3653
     )
-    error_message = "[ERROR] The value must be one of the followings: 0,1,3,5,7,14,30,60,90,120,150,180,365,400,545,731,1827,3653."
+    error_message = "The value must be one of the followings: 0,1,3,5,7,14,30,60,90,120,150,180,365,400,545,731,1827,3653."
+  }
+}
+
+variable "vpc_flow_logs_destination" {
+  type = string
+
+  validation {
+    condition = (
+      var.vpc_flow_logs_destination == "S3" ||
+      var.vpc_flow_logs_destination == "CloudWatch"
+    )
+    error_message = "S3 or CloudWatch are the only values allowed (case sensitive)."
   }
 }
