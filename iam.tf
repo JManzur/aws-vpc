@@ -1,5 +1,56 @@
 # VPC Flow Logs IAM Policy Document
-data "aws_iam_policy_document" "vpc_fl_policy_source" {
+data "aws_iam_policy_document" "s3" {
+  count = var.vpc_flow_logs_destination == "S3" ? 1 : 0
+  statement {
+    sid    = "SendVPCFlowLogs"
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "S3RW"
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket",
+      "s3:*Object"
+    ]
+    resources = [
+      "${aws_s3_bucket.vpc_flow_logs[0].arn}",
+      "${aws_s3_bucket.vpc_flow_logs[0].arn}/*",
+    ]
+  }
+
+
+  statement {
+    sid    = "KMSRW"
+    effect = "Allow"
+    actions = [
+      "kms:Encrypt*",
+      "kms:Decrypt*",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:Describe*"
+    ]
+    resources = [
+      aws_kms_key.vpc_flow_logs[0].arn
+    ]
+  }
+
+  depends_on = [
+    aws_s3_bucket.vpc_flow_logs,
+    aws_kms_key.vpc_flow_logs
+  ]
+}
+
+data "aws_iam_policy_document" "cloudwatch" {
+  count = var.vpc_flow_logs_destination == "S3" ? 0 : 1
   statement {
     sid    = "SendVPCFlowLogs"
     effect = "Allow"
@@ -32,7 +83,7 @@ resource "aws_iam_policy" "vpc_fl_policy" {
   name        = "${var.name_prefix}-VPCFlowLogs-Policy"
   path        = "/"
   description = "VPC Flow Logs"
-  policy      = data.aws_iam_policy_document.vpc_fl_policy_source.json
+  policy      = var.vpc_flow_logs_destination == "S3" ? data.aws_iam_policy_document.s3[0].json : data.aws_iam_policy_document.cloudwatch[0].json
   tags        = { Name = "${var.name_prefix}-VPCFlowLogs-Policy" }
 }
 

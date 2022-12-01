@@ -85,13 +85,18 @@ resource "aws_flow_log" "cloudwatch" {
   log_destination = aws_cloudwatch_log_group.vpc_log_group[0].arn
   traffic_type    = "ALL"
   vpc_id          = aws_vpc.vpc.id
+
+  tags = { Name = lower("${var.name_prefix}-cw-vpc-flow-logs") }
 }
 
 # VPC Flow Logs to S3
 resource "aws_flow_log" "s3" {
   count                = var.vpc_flow_logs_destination == "S3" ? 1 : 0
+  iam_role_arn         = aws_iam_role.vpc_fl_policy_role.arn
   log_destination      = aws_s3_bucket.vpc_flow_logs[0].arn
   log_destination_type = "s3"
   traffic_type         = "ALL"
   vpc_id               = aws_vpc.vpc.id
+
+  tags = { Name = lower("${var.name_prefix}-s3-vpc-flow-logs") }
 }
