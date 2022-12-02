@@ -100,3 +100,55 @@ resource "aws_flow_log" "s3" {
 
   tags = { Name = lower("${var.name_prefix}-s3-vpc-flow-logs") }
 }
+
+data "aws_caller_identity" "current" {}
+
+# Define the S3 Bucket Policy
+data "aws_iam_policy_document" "vpc_flow_logs" {
+  count = var.vpc_flow_logs_destination == "S3" ? 1 : 0
+  statement {
+    sid    = "AWSLogDeliveryWrite"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
+    }
+    actions   = ["s3:PutObject"]
+    resources = [aws_s3_bucket.vpc_flow_logs[0].arn]
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
+    }
+    condition {
+      test   = "aws:SourceArn"
+      values = ["arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:*"]
+    }
+  }
+
+  statement {
+    sid    = "AWSLogDeliveryAclCheck"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
+    }
+    actions   = ["s3:GetBucketAcl"]
+    resources = [aws_s3_bucket.vpc_flow_logs[0].arn]
+  }
+  condition {
+    test   = "aws:SourceAccount"
+    values = [data.aws_caller_identity.current.account_id]
+  }
+  condition {
+    test   = "aws:SourceArn"
+    values = ["arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:*"]
+  }
+}
+
+# S3 Bucket Policy
+resource "aws_s3_bucket_policy" "vpc_flow_logs" {
+  count  = var.vpc_flow_logs_destination == "S3" ? 1 : 0
+  bucket = aws_s3_bucket.vpc_flow_logs[0].id
+  policy = data.aws_iam_policy_document.vpc_flow_logs[0].json
+}

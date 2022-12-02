@@ -1,4 +1,4 @@
-# VPC Flow Logs IAM Policy Document
+# S3 VPC Flow Logs IAM Policy Document
 data "aws_iam_policy_document" "s3" {
   count = var.vpc_flow_logs_destination == "S3" ? 1 : 0
   statement {
@@ -9,7 +9,9 @@ data "aws_iam_policy_document" "s3" {
       "logs:CreateLogStream",
       "logs:PutLogEvents",
       "logs:DescribeLogGroups",
-      "logs:DescribeLogStreams"
+      "logs:DescribeLogStreams",
+      "logs:CreateLogDelivery",
+      "logs:DeleteLogDelivery"
     ]
     resources = ["*"]
   }
@@ -26,7 +28,6 @@ data "aws_iam_policy_document" "s3" {
       "${aws_s3_bucket.vpc_flow_logs[0].arn}/*",
     ]
   }
-
 
   statement {
     sid    = "KMSRW"
@@ -49,6 +50,7 @@ data "aws_iam_policy_document" "s3" {
   ]
 }
 
+# CloudWatch VPC Flow Logs IAM Policy Document
 data "aws_iam_policy_document" "cloudwatch" {
   count = var.vpc_flow_logs_destination == "S3" ? 0 : 1
   statement {
@@ -59,7 +61,9 @@ data "aws_iam_policy_document" "cloudwatch" {
       "logs:CreateLogStream",
       "logs:PutLogEvents",
       "logs:DescribeLogGroups",
-      "logs:DescribeLogStreams"
+      "logs:DescribeLogStreams",
+      "logs:CreateLogDelivery",
+      "logs:DeleteLogDelivery"
     ]
     resources = ["*"]
   }
@@ -80,18 +84,18 @@ data "aws_iam_policy_document" "vpc_fl_role_source" {
 
 # VPC Flow Logs IAM Policy
 resource "aws_iam_policy" "vpc_fl_policy" {
-  name        = "${var.name_prefix}-VPCFlowLogs-Policy"
+  name        = lower("${var.name_prefix}-vpc-flow-logs-policy")
   path        = "/"
-  description = "VPC Flow Logs"
+  description = "VPC Flow Logs Policy"
   policy      = var.vpc_flow_logs_destination == "S3" ? data.aws_iam_policy_document.s3[0].json : data.aws_iam_policy_document.cloudwatch[0].json
-  tags        = { Name = "${var.name_prefix}-VPCFlowLogs-Policy" }
+  tags        = { Name = lower("${var.name_prefix}-vpc-flow-logs-policy") }
 }
 
 # VPC Flow Logs IAM Role (vpc_fl_ Task Execution role)
 resource "aws_iam_role" "vpc_fl_policy_role" {
-  name               = "${var.name_prefix}-VPCFlowLogs-Role"
+  name               = lower("${var.name_prefix}-vpc-flow-logs-role")
   assume_role_policy = data.aws_iam_policy_document.vpc_fl_role_source.json
-  tags               = { Name = "${var.name_prefix}-VPCFlowLogs-Role" }
+  tags               = { Name = lower("${var.name_prefix}-vpc-flow-logs-role") }
 }
 
 # Attach VPC Flow Logs Role and Policy
