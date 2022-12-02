@@ -31,24 +31,8 @@ data "aws_iam_policy_document" "s3" {
     ]
   }
 
-  statement {
-    sid    = "KMSRW"
-    effect = "Allow"
-    actions = [
-      "kms:Encrypt*",
-      "kms:Decrypt*",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:Describe*"
-    ]
-    resources = [
-      aws_kms_key.vpc_flow_logs[0].arn
-    ]
-  }
-
   depends_on = [
-    aws_s3_bucket.vpc_flow_logs,
-    aws_kms_key.vpc_flow_logs
+    aws_s3_bucket.vpc_flow_logs
   ]
 }
 

@@ -1,23 +1,3 @@
-# Create the KMS Key
-resource "aws_kms_key" "vpc_flow_logs" {
-  count                   = var.vpc_flow_logs_destination == "S3" ? 1 : 0
-  description             = "S3 Encryption Key"
-  deletion_window_in_days = 15
-  multi_region            = false
-  tags                    = { Name = lower("${var.name_prefix}-vpc-flow-logs") }
-
-  depends_on = [
-    aws_vpc.vpc
-  ]
-}
-
-# Create the KMS Key Alias
-resource "aws_kms_alias" "vpc_flow_logs" {
-  count         = var.vpc_flow_logs_destination == "S3" ? 1 : 0
-  name          = lower("alias/${aws_vpc.vpc.id}-flow-logs")
-  target_key_id = aws_kms_key.vpc_flow_logs[0].key_id
-}
-
 # Create the Bucket
 resource "aws_s3_bucket" "vpc_flow_logs" {
   count  = var.vpc_flow_logs_destination == "S3" ? 1 : 0
@@ -57,12 +37,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_flow_logs" {
 
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.vpc_flow_logs[0].arn
       sse_algorithm     = "aws:kms"
     }
   }
-
-  depends_on = [aws_kms_key.vpc_flow_logs]
 }
 
 ##CloudWatch log group
