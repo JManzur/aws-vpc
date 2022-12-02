@@ -4,7 +4,7 @@ Terraform Module to deploy a VPC
 
 ```bash
 module "vpc" {
-  source                    = "git::https://github.com/JManzur/aws-vpc.git?ref=v1.0.5"
+  source                    = "git::https://github.com/JManzur/aws-vpc.git?ref=v1.1.3"
   name_prefix               = "Demo"
   aws_region                = "us-east-1"
   logs_retention            = 0

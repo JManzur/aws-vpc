@@ -5,6 +5,10 @@ resource "aws_s3_bucket" "vpc_flow_logs" {
 
   tags = { Name = lower("${var.name_prefix}-vpc-flow-logs") }
 
+  lifecycle {
+    ignore_changes = [server_side_encryption_configuration]
+  }
+  
   depends_on = [
     aws_vpc.vpc
   ]
@@ -37,7 +41,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_flow_logs" {
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm     = "aws:kms"
+      sse_algorithm     = "AES256"
     }
   }
 }
