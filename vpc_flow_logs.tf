@@ -121,8 +121,9 @@ data "aws_iam_policy_document" "vpc_flow_logs" {
       values   = ["bucket-owner-full-control"]
     }
     condition {
-      test   = "aws:SourceArn"
-      values = ["arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:*"]
+      test     = "ArnLike"
+      variable = "aws:SourceArn"
+      values   = ["arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:*"]
     }
   }
 
@@ -135,14 +136,16 @@ data "aws_iam_policy_document" "vpc_flow_logs" {
     }
     actions   = ["s3:GetBucketAcl"]
     resources = [aws_s3_bucket.vpc_flow_logs[0].arn]
-  }
-  condition {
-    test   = "aws:SourceAccount"
-    values = [data.aws_caller_identity.current.account_id]
-  }
-  condition {
-    test   = "aws:SourceArn"
-    values = ["arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:*"]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
+    condition {
+      test     = "ArnLike"
+      variable = "aws:SourceArn"
+      values   = ["arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:*"]
+    }
   }
 }
 
