@@ -21,7 +21,9 @@ data "aws_iam_policy_document" "s3" {
     effect = "Allow"
     actions = [
       "s3:ListBucket",
-      "s3:*Object"
+      "s3:*Object",
+      "s3:PutBucketPolicy",
+      "s3:GetBucketPolicy"
     ]
     resources = [
       "${aws_s3_bucket.vpc_flow_logs[0].arn}",
