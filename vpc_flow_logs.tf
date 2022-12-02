@@ -44,7 +44,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_flow_logs" {
 
 ##CloudWatch log group
 resource "aws_cloudwatch_log_group" "vpc_log_group" {
-  count             = var.vpc_flow_logs_destination == "S3" ? 0 : 1
+  count             = var.vpc_flow_logs_destination == "CloudWatch" ? 1 : 0
   name              = "${aws_vpc.vpc.id}-flow-logs"
   retention_in_days = var.logs_retention
 
@@ -57,7 +57,7 @@ resource "aws_cloudwatch_log_group" "vpc_log_group" {
 
 # VPC Flow Logs to CloudWatch
 resource "aws_flow_log" "cloudwatch" {
-  count           = var.vpc_flow_logs_destination == "S3" ? 0 : 1
+  count           = var.vpc_flow_logs_destination == "CloudWatch" ? 1 : 0
   iam_role_arn    = aws_iam_role.vpc_fl_policy_role.arn
   log_destination = aws_cloudwatch_log_group.vpc_log_group[0].arn
   traffic_type    = "ALL"

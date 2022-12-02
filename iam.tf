@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "s3" {
   }
 
   statement {
-    sid    = "S3RW"
+    sid    = "VPCFlowLogsBucket"
     effect = "Allow"
     actions = [
       "s3:ListBucket",
@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "s3" {
 
 # CloudWatch VPC Flow Logs IAM Policy Document
 data "aws_iam_policy_document" "cloudwatch" {
-  count = var.vpc_flow_logs_destination == "S3" ? 0 : 1
+  count = var.vpc_flow_logs_destination == "CloudWatch" ? 1 : 0
   statement {
     sid    = "SendVPCFlowLogs"
     effect = "Allow"
