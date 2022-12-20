@@ -8,6 +8,10 @@ If the `one_nat_per_subnet` parameter is set to true, means that a network addre
 
 > :information_source: More details about each variable can be found in the **variables.tf** file.
 
+## How-To use this module:
+
+The following is an example of how to use the module, here all the input variables are set directly in the module's resource block, but a better practice would be to declare the variables in a variables.tf file and have the values of the variables in a .tfvars file.
+
 ```bash
 module "vpc" {
   source                    = "git::https://github.com/JManzur/aws-vpc.git?ref=v1.1.4"
@@ -48,7 +52,7 @@ module "vpc" {
 }
 ```
 
-## `cidrsubnet` Function:
+## `cidrsubnet` function explanation:
 
 `cidrsubnet` calculates a subnet address within a given IP network address prefix.
 
