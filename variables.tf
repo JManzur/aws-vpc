@@ -44,8 +44,9 @@ variable "private_subnet_list" {
 }
 
 variable "logs_retention" {
-  description = "[REQUIRED] The number of days to retain log events in CloudWatch"
+  description = "[OPTIONAL] The number of days to retain VPC Flow Logs in CloudWatch"
   type        = number
+  default     = 60
 
   validation {
     condition = (
@@ -73,13 +74,29 @@ variable "logs_retention" {
 }
 
 variable "vpc_flow_logs_destination" {
-  type = string
+  description = "[OPTIONAL] The type of the logging destination"
+  type        = string
+  default     = "CloudWatch"
 
   validation {
     condition = (
       var.vpc_flow_logs_destination == "S3" ||
       var.vpc_flow_logs_destination == "CloudWatch"
     )
-    error_message = "S3 or CloudWatch are the only values allowed (case sensitive)."
+    error_message = "S3 or CloudWatch are the only valid values. (case sensitive)."
+  }
+}
+
+variable "aggregation_interval" {
+  description = "[OPTIONAL] The maximum interval of time during which a flow of packets is captured and aggregated into a flow log record."
+  type        = number
+  default     = 600
+
+  validation {
+    condition = (
+      var.aggregation_interval == 60 ||
+      var.aggregation_interval == 600
+    )
+    error_message = "60 seconds (1 minute) or 600 seconds (10 minutes), are the only valid values."
   }
 }

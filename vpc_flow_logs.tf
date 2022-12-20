@@ -8,7 +8,7 @@ resource "aws_s3_bucket" "vpc_flow_logs" {
   lifecycle {
     ignore_changes = [server_side_encryption_configuration]
   }
-  
+
   depends_on = [
     aws_vpc.vpc
   ]
@@ -41,7 +41,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_flow_logs" {
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm     = "AES256"
+      sse_algorithm = "AES256"
     }
   }
 }
@@ -61,23 +61,25 @@ resource "aws_cloudwatch_log_group" "vpc_log_group" {
 
 # VPC Flow Logs to CloudWatch
 resource "aws_flow_log" "cloudwatch" {
-  count           = var.vpc_flow_logs_destination == "CloudWatch" ? 1 : 0
-  iam_role_arn    = aws_iam_role.vpc_fl_policy_role.arn
-  log_destination = aws_cloudwatch_log_group.vpc_log_group[0].arn
-  traffic_type    = "ALL"
-  vpc_id          = aws_vpc.vpc.id
+  count                    = var.vpc_flow_logs_destination == "CloudWatch" ? 1 : 0
+  iam_role_arn             = aws_iam_role.vpc_fl_policy_role.arn
+  log_destination          = aws_cloudwatch_log_group.vpc_log_group[0].arn
+  traffic_type             = "ALL"
+  max_aggregation_interval = var.aggregation_interval
+  vpc_id                   = aws_vpc.vpc.id
 
   tags = { Name = lower("${var.name_prefix}-cw-vpc-flow-logs") }
 }
 
 # VPC Flow Logs to S3
 resource "aws_flow_log" "s3" {
-  count                = var.vpc_flow_logs_destination == "S3" ? 1 : 0
-  iam_role_arn         = aws_iam_role.vpc_fl_policy_role.arn
-  log_destination      = aws_s3_bucket.vpc_flow_logs[0].arn
-  log_destination_type = "s3"
-  traffic_type         = "ALL"
-  vpc_id               = aws_vpc.vpc.id
+  count                    = var.vpc_flow_logs_destination == "S3" ? 1 : 0
+  iam_role_arn             = aws_iam_role.vpc_fl_policy_role.arn
+  log_destination          = aws_s3_bucket.vpc_flow_logs[0].arn
+  log_destination_type     = "s3"
+  traffic_type             = "ALL"
+  max_aggregation_interval = var.aggregation_interval
+  vpc_id                   = aws_vpc.vpc.id
 
   tags = { Name = lower("${var.name_prefix}-s3-vpc-flow-logs") }
 }

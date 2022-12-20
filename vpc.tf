@@ -77,8 +77,14 @@ resource "aws_route_table" "private_route_table" {
 }
 
 # Private Subnets Association
-resource "aws_route_table_association" "private" {
-  count          = length(var.private_subnet_list)
+resource "aws_route_table_association" "private_one_nat_gw" {
+  count          = var.one_nat_per_subnet ? 0 : length(var.private_subnet_list)
+  subnet_id      = aws_subnet.private[count.index].id
+  route_table_id = aws_route_table.private_route_table[0].id
+}
+
+resource "aws_route_table_association" "private_multi_natgw" {
+  count          = var.one_nat_per_subnet ? length(var.private_subnet_list) : 0
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private_route_table[count.index].id
 }

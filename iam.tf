@@ -30,10 +30,6 @@ data "aws_iam_policy_document" "s3" {
       "${aws_s3_bucket.vpc_flow_logs[0].arn}/*",
     ]
   }
-
-  depends_on = [
-    aws_s3_bucket.vpc_flow_logs
-  ]
 }
 
 # CloudWatch VPC Flow Logs IAM Policy Document
@@ -77,7 +73,7 @@ resource "aws_iam_policy" "vpc_fl_policy" {
   tags        = { Name = lower("${var.name_prefix}-vpc-flow-logs-policy") }
 }
 
-# VPC Flow Logs IAM Role (vpc_fl_ Task Execution role)
+# VPC Flow Logs IAM Role
 resource "aws_iam_role" "vpc_fl_policy_role" {
   name               = lower("${var.name_prefix}-vpc-flow-logs-role")
   assume_role_policy = data.aws_iam_policy_document.vpc_fl_role_source.json
