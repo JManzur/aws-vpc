@@ -1,10 +1,16 @@
 # AWS VPC Terraform Module
 
-Terraform Module to deploy a VPC
+Terraform Module to deploy a VPC.
+
+The module accepts a lists of public and private subnets, which are specified with the `public_subnet_list` and `private_subnet_list` parameters, respectively. Each subnet in the list is defined with a name, availability zone (AZ), CIDR range, and network number. This CIDR is built using the `cidrsubnet` function (more details below).
+
+If the `one_nat_per_subnet` parameter is set to true, means that a network address translation (NAT) gateway will be created for each subnet in the VPC. NAT gateways allow instances in private subnets to access the internet, while preventing the internet from initiating connections to those instances.
+
+> :information_source: More details about each variable can be found in the **variables.tf** file.
 
 ```bash
 module "vpc" {
-  source                    = "git::https://github.com/JManzur/aws-vpc.git?ref=v1.1.3"
+  source                    = "git::https://github.com/JManzur/aws-vpc.git?ref=v1.1.4"
   name_prefix               = "Demo"
   aws_region                = "us-east-1"
   logs_retention            = 0
@@ -41,7 +47,6 @@ module "vpc" {
   ]
 }
 ```
-
 
 ## `cidrsubnet` Function:
 
